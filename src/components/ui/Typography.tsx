@@ -8,6 +8,7 @@ interface TypographyProps {
   color?: ColorVariant;
   as?: React.ElementType;
   className?: string;
+  id?: string;
   children: React.ReactNode;
 }
 
@@ -44,10 +45,11 @@ export function Typography({
   color = 'primary',
   as,
   className = '',
+  id,
   children,
 }: TypographyProps) {
   const Component = as || defaultElements[variant];
   const combinedClasses = `${variantStyles[variant]} ${colorStyles[color]} ${className}`.trim();
 
-  return <Component className={combinedClasses}>{children}</Component>;
+  return <Component id={id} className={combinedClasses}>{children}</Component>;
 }

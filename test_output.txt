@@ -1,0 +1,105 @@
+
+ RUN  v4.1.2 /workspaces/teste
+
+ × src/test/Navigation.test.tsx > Router Integration > renders layout and matches child route 214ms
+   → Unable to find an accessible element with the role "heading" and name `/contas bancarias/i`
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "Unexpected Application Error!":
+  [36m<h2 />[39m
+
+  Name "No QueryClient set, use QueryClientProvider to set one":
+  [36m<h3[39m
+    [33mstyle[39m=[32m"font-style: italic;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  code:
+
+  Name "":
+  [36m<code[39m
+    [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<code[39m
+    [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<h2>[39m
+      [0mUnexpected Application Error![0m
+    [36m</h2>[39m
+    [36m<h3[39m
+      [33mstyle[39m=[32m"font-style: italic;"[39m
+    [36m>[39m
+      [0mNo QueryClient set, use QueryClientProvider to set one[0m
+    [36m</h3>[39m
+    [36m<pre[39m
+      [33mstyle[39m=[32m"padding: 0.5rem; background-color: rgba(200, 200, 200, 0.5);"[39m
+    [36m>[39m
+      [0mError: No QueryClient set, use QueryClientProvider to set one
+    at useQueryClient (/workspaces/teste/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.cjs:50:11)
+    at useBaseQuery (/workspaces/teste/node_modules/@tanstack/react-query/build/modern/useBaseQuery.cjs:54:64)
+    at useQuery (/workspaces/teste/node_modules/@tanstack/react-query/build/modern/useQuery.cjs:30:47)
+    at useAccounts (/workspaces/teste/src/features/finance/api/queries.js:69:39)
+    at AccountsPage (/workspaces/teste/src/features/accounts/AccountsPage.tsx:27:57)
+    at Object.react_stack_bottom_frame (/workspaces/teste/node_modules/react-dom/cjs/react-dom-client.development.js:25904:20)
+    at renderWithHooks (/workspaces/teste/node_modules/react-dom/cjs/react-dom-client.development.js:7662:22)
+    at updateFunctionComponent (/workspaces/teste/node_modules/react-dom/cjs/react-dom-client.development.js:10166:19)
+    at beginWork (/workspaces/teste/node_modules/react-dom/cjs/react-dom-client.development.js:11778:18)
+    at runWithFiberInDEV (/workspaces/teste/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)[0m
+    [36m</pre>[39m
+    [36m<p>[39m
+      [0m💿 Hey developer 👋[0m
+    [36m</p>[39m
+    [36m<p>[39m
+      [0mYou can provide a way better UX than this when your app throws errors by providing your own [0m
+      [36m<code[39m
+        [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+      [36m>[39m
+        [0mErrorBoundary[0m
+      [36m</code>[39m
+      [0m or[0m
+      [0m [0m
+      [36m<code[39m
+        [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+      [36m>[39m
+        [0merrorElement[0m
+      [36m</code>[39m
+      [0m prop on your route.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × src/test/AccountsPage.test.tsx > AccountsPage > renders loading skeleton when fetching 22ms
+   → No QueryClient set, use QueryClientProvider to set one
+ × src/test/AccountsPage.test.tsx > AccountsPage > renders data table when successful 3ms
+   → No QueryClient set, use QueryClientProvider to set one
+ × src/test/AccountsPage.test.tsx > AccountsPage > renders error state 2ms
+   → No QueryClient set, use QueryClientProvider to set one
+ ✓ src/test/selectors.test.ts > Selectors > getFinancialSummary must calculate correct balances 6ms
+ ✓ src/test/selectors.test.ts > Selectors > getExpenseCategoryPercentages must calculate exact percentages 0ms
+ ✓ src/test/selectors.test.ts > Selectors > getGoalsProgress must cap correctly and show remaining amount 0ms
+ ✓ src/test/selectors.test.ts > Selectors > getPendingBillsAmount must filter only pending items 0ms
+
+ Test Files  5 failed | 1 passed (6)
+      Tests  4 failed | 4 passed (8)
+   Start at  17:24:40
+   Duration  7.57s (transform 153ms, setup 316ms, import 504ms, tests 260ms, environment 4.98s)
+

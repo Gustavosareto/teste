@@ -1,4 +1,4 @@
-import React from 'react';
+ 
 import {
   AreaChart,
   Area,
@@ -7,22 +7,17 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  TooltipProps,
+  
 } from 'recharts';
 import { CurrencyFormat } from '../../../components/ui/CurrencyFormat';
-
-export interface CashFlowData {
-  month: string;
-  income: number;
-  expense: number;
-}
+import { MonthlyCashFlowPoint } from '../../finance/types';
 
 interface CashFlowChartProps {
-  data: CashFlowData[];
+  data: MonthlyCashFlowPoint[];
 }
 
 // Tooltip customizado para manter a consistência do Design System (Tailwind)
-const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div 
@@ -32,7 +27,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
       >
         <p className="font-semibold text-slate-800 mb-3 border-b border-slate-100 pb-2">{label}</p>
         <div className="flex flex-col gap-2">
-          {payload.map((entry, index) => (
+          {payload.map((entry: any, index: number) => (
             <div key={`item-${index}`} className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <div 

@@ -1,30 +1,26 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   BankAccount, 
   ExpenseCategory, 
   FinancialGoal, 
   MonthlyCashFlowPoint, 
-  RecurringBill 
-} from '../types';
+  RecurringBill,
+  Transaction
+} from "../types";
 
-// O client real estaria aqui `import { apiClient } from '../../../lib/api';`
-// Para não quebrar por falta de mock de rotas complexas, usaremos os dados já criados como mock estático.
 import {
   bankAccounts,
   expenseByCategory,
   financialGoals,
   monthlyCashFlow,
   recurringBills,
-} from '../data/financeMockData';
+} from "../data/financeMockData";
 
-/**
- * Simulador de chamadas de API tipadas que retorna uma Promise com delay
- */
 async function fetchMock<T>(data: T, shouldFail = false): Promise<T> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (shouldFail) {
-        reject(new Error('Falha simulada na API'));
+        reject(new Error("Falha simulada na API"));
       } else {
         resolve(data);
       }
@@ -32,149 +28,61 @@ async function fetchMock<T>(data: T, shouldFail = false): Promise<T> {
   });
 }
 
-// ------------------------------
-// API Calls
-// ------------------------------
 export const getAccounts = () => fetchMock<BankAccount[]>(bankAccounts);
 export const getGoals = () => fetchMock<FinancialGoal[]>(financialGoals);
 export const getBills = () => fetchMock<RecurringBill[]>(recurringBills);
 export const getCashFlow = () => fetchMock<MonthlyCashFlowPoint[]>(monthlyCashFlow);
 export const getExpenses = () => fetchMock<ExpenseCategory[]>(expenseByCategory);
 
-export const createGoal = async (newGoal: Omit<FinancialGoal, 'id' | 'status'>) => {
+export const createGoal = async (newGoal: Omit<FinancialGoal, "id" | "status">) => {
   return new Promise<FinancialGoal>((resolve) => {
     setTimeout(() => {
       const goal: FinancialGoal = {
         ...newGoal,
         id: `goal-${Math.random().toString(36).substr(2, 9)}`,
-        status: newGoal.currentAmount >= newGoal.targetAmount ? 'concluida' : 'em-dia',
+        status: newGoal.currentAmount >= newGoal.targetAmount ? "concluida" : "em-dia",
       };
-      // Mutating mock data directly to simulate backend state
       financialGoals.push(goal);
       resolve(goal);
     }, 800);
   });
 };
 
-// ------------------------------
-// React Query Hooks
-// ------------------------------
-
-export const queryKeys = {
-  accounts: ['accounts'] as const,
-  goals: ['goals'] as const,
-  bills: ['bills'] as const,
-  cashFlow: ['cashFlow'] as const,
-  expenses: ['expenses'] as const,
-};
-
-export function useAccounts() {
-  return useQuery({
-    queryKey: queryKeys.accounts,
-    queryFn: getAccounts,
-    staleTime: 1000 * 60 * 5, // 5 minutos de cache
-  });
-}
-
-export function useGoals() {
-  return useQuery({
-    queryKey: queryKeys.goals,
-    queryFn: getGoals,
-    staleTime: 1000 * 60 * 5,
-  });
-}
-
-export function useCreateGoal() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: createGoal,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.goals });
-    },
-  });
-}
-
-export function useBills() {
-  return useQuery({
-    queryKey: queryKeys.bills,
-    queryFn: getBills,
-    staleTime: 1000 * 60 * 5,
-  });
-}
-
-export function useCashFlow() {
-  return useQuery({
-    queryKey: queryKeys.cashFlow,
-    queryFn: getCashFlow,
-    staleTime: 1000 * 60 * 5,
-  });
-}
-
-export function useExpenses() {
-  return useQuery({
-    queryKey: queryKeys.expenses,
-    queryFn: getExpenses,
-    staleTime: 1000 * 60 * 5,
-  });
-}
-
-export const updateGoal = async (updatedGoal: FinancialGoal) => {
-  return new Promise<FinancialGoal>((resolve) => {
+export const updateGoal = async (id: string, updates: Partial<FinancialGoal>) => {
+  return new Promise<FinancialGoal>((resolve, reject) => {
     setTimeout(() => {
-      const index = financialGoals.findIndex((g) => g.id === updatedGoal.id);
-      if (index !== -1) {
-        financialGoals[index] = {
-          ...updatedGoal,
-          status: updatedGoal.currentAmount >= updatedGoal.targetAmount ? 'concluida' : 'em-dia',
-        };
-      }
-      resolve(updatedGoal);
+      const index = financialGoals.findIndex(g => g.id === id);
+      if (index === -1) return reject(new Error("Goal not found"));
+      
+      financialGoals[index] = { 
+        ...financialGoals[index], 
+        ...updates,
+        status: (updates.currentAmount ?? financialGoals[index].currentAmount) >= (updates.targetAmount ?? financialGoals[index].targetAmount) 
+          ? "concluida" 
+          : "em-dia"
+      };
+      resolve(financialGoals[index]);
     }, 800);
   });
 };
 
-export const deleteGoal = async (goalId: string) => {
-  return new Promise<string>((resolve) => {
+export const deleteGoal = async (id: string) => {
+  return new Promise<void>((resolve) => {
     setTimeout(() => {
-      const index = financialGoals.findIndex((g) => g.id === goalId);
-      if (index !== -1) {
-        financialGoals.splice(index, 1);
-      }
-      resolve(goalId);
-    }, 800);
+      const index = financialGoals.findIndex(g => g.id === id);
+      if (index !== -1) financialGoals.splice(index, 1);
+      resolve();
+    }, 600);
   });
 };
 
-export function useUpdateGoal() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: updateGoal,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.goals });
-    },
-  });
-}
-
-export function useDeleteGoal() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: deleteGoal,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.goals });
-    },
-  });
-}
-
-export const createAccount = async (newAccount: Omit<BankAccount, 'id' | 'lastUpdate'>) => {
+export const createAccount = async (newAccount: Omit<BankAccount, "id" | "lastUpdate">) => {
   return new Promise<BankAccount>((resolve) => {
     setTimeout(() => {
       const account: BankAccount = {
         ...newAccount,
         id: `acc-${Math.random().toString(36).substr(2, 9)}`,
-        lastUpdate: new Date().toISOString(),
+        lastUpdate: new Date().toISOString()
       };
       bankAccounts.push(account);
       resolve(account);
@@ -182,56 +90,33 @@ export const createAccount = async (newAccount: Omit<BankAccount, 'id' | 'lastUp
   });
 };
 
-export const updateAccount = async (updatedAccount: BankAccount) => {
-  return new Promise<BankAccount>((resolve) => {
+export const updateAccount = async (id: string, updates: Partial<BankAccount>) => {
+  return new Promise<BankAccount>((resolve, reject) => {
     setTimeout(() => {
-      const index = bankAccounts.findIndex((a) => a.id === updatedAccount.id);
-      if (index !== -1) {
-        bankAccounts[index] = {
-          ...updatedAccount,
-          lastUpdate: new Date().toISOString(),
-        };
-      }
-      resolve(updatedAccount);
+      const index = bankAccounts.findIndex(a => a.id === id);
+      if (index === -1) return reject(new Error("Account not found"));
+      
+      bankAccounts[index] = { 
+        ...bankAccounts[index], 
+        ...updates,
+        lastUpdate: new Date().toISOString()
+      };
+      resolve(bankAccounts[index]);
     }, 800);
   });
 };
 
 export const deleteAccount = async (id: string) => {
-  return new Promise<string>((resolve) => {
+  return new Promise<void>((resolve) => {
     setTimeout(() => {
-      const index = bankAccounts.findIndex((a) => a.id === id);
+      const index = bankAccounts.findIndex(a => a.id === id);
       if (index !== -1) bankAccounts.splice(index, 1);
-      resolve(id);
-    }, 800);
+      resolve();
+    }, 600);
   });
 };
 
-export function useCreateAccount() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: createAccount,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.accounts }),
-  });
-}
-
-export function useUpdateAccount() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: updateAccount,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.accounts }),
-  });
-}
-
-export function useDeleteAccount() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: deleteAccount,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.accounts }),
-  });
-}
-
-export const createBill = async (newBill: Omit<RecurringBill, 'id'>) => {
+export const createBill = async (newBill: Omit<RecurringBill, "id">) => {
   return new Promise<RecurringBill>((resolve) => {
     setTimeout(() => {
       const bill: RecurringBill = {
@@ -244,41 +129,143 @@ export const createBill = async (newBill: Omit<RecurringBill, 'id'>) => {
   });
 };
 
-export const updateBill = async (updatedBill: RecurringBill) => {
-  return new Promise<RecurringBill>((resolve) => {
+export const updateBill = async (id: string, updates: Partial<RecurringBill>) => {
+  return new Promise<RecurringBill>((resolve, reject) => {
     setTimeout(() => {
-      const index = recurringBills.findIndex((b) => b.id === updatedBill.id);
-      if (index !== -1) {
-        recurringBills[index] = updatedBill;
-      }
-      resolve(updatedBill);
+      const index = recurringBills.findIndex(b => b.id === id);
+      if (index === -1) return reject(new Error("Bill not found"));
+      
+      recurringBills[index] = { 
+        ...recurringBills[index], 
+        ...updates,
+      };
+      resolve(recurringBills[index]);
     }, 800);
   });
 };
 
 export const deleteBill = async (id: string) => {
-  return new Promise<string>((resolve) => {
+  return new Promise<void>((resolve) => {
     setTimeout(() => {
-      const index = recurringBills.findIndex((b) => b.id === id);
+      const index = recurringBills.findIndex(b => b.id === id);
       if (index !== -1) recurringBills.splice(index, 1);
-      resolve(id);
-    }, 800);
+      resolve();
+    }, 600);
   });
 };
+
+export function useAccounts() {
+  return useQuery({
+    queryKey: ["bank-accounts"],
+    queryFn: getAccounts,
+  });
+}
+
+export function useGoals() {
+  return useQuery({
+    queryKey: ["financial-goals"],
+    queryFn: getGoals,
+  });
+}
+
+export function useBills() {
+  return useQuery({
+    queryKey: ["recurring-bills"],
+    queryFn: getBills,
+  });
+}
+
+export function useCashFlow() {
+  return useQuery({
+    queryKey: ["cash-flow"],
+    queryFn: getCashFlow,
+  });
+}
+
+export function useExpenses() {
+  return useQuery({
+    queryKey: ["expenses-category"],
+    queryFn: getExpenses,
+  });
+}
+
+export function useCreateGoal() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createGoal,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["financial-goals"] });
+    }
+  });
+}
+
+export function useUpdateGoal() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, updates }: { id: string, updates: Partial<FinancialGoal> }) => updateGoal(id, updates),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["financial-goals"] });
+    }
+  });
+}
+
+export function useDeleteGoal() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteGoal,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["financial-goals"] });
+    }
+  });
+}
+
+export function useCreateAccount() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createAccount,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bank-accounts"] });
+    }
+  });
+}
+
+export function useUpdateAccount() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, updates }: { id: string, updates: Partial<BankAccount> }) => updateAccount(id, updates),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bank-accounts"] });
+    }
+  });
+}
+
+export function useDeleteAccount() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteAccount,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bank-accounts"] });
+    }
+  });
+}
 
 export function useCreateBill() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createBill,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.bills }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["recurring-bills"] });
+    }
   });
 }
 
 export function useUpdateBill() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: updateBill,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.bills }),
+    mutationFn: ({ id, updates }: { id: string, updates: Partial<RecurringBill> }) => updateBill(id, updates),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["recurring-bills"] });
+    }
   });
 }
 
@@ -286,6 +273,39 @@ export function useDeleteBill() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteBill,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.bills }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["recurring-bills"] });
+    }
+  });
+}
+
+export function useCreateTransaction() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (newTransaction: Omit<Transaction, "id" | "date">) => {
+      await new Promise(r => setTimeout(r, 800));
+      const transaction: Transaction = {
+        ...newTransaction,
+        id: Math.random().toString(36).substring(7),
+        date: new Date().toISOString(),
+      };
+      
+      const account = bankAccounts.find(a => a.id === newTransaction.accountId);
+      if (account) {
+        if (newTransaction.type === "income") {
+          account.currentBalance += newTransaction.amount;
+        } else {
+          account.currentBalance -= newTransaction.amount;
+        }
+        account.lastUpdate = new Date().toISOString();
+      }
+      
+      return transaction;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bank-accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["cash-flow"] });
+    },
   });
 }

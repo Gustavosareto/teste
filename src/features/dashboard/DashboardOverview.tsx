@@ -1,61 +1,17 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Typography } from '../../components/ui/Typography';
-import { CurrencyFormat } from '../../components/ui/CurrencyFormat';
 import { Skeleton } from '../../components/ui/Skeleton';
-import { mockCashFlowData } from './mocks/dashboardData';
+import { Modal } from '../../components/ui/Modal';
+import {
+  getExpenseCategoryPercentages,
+  getFinancialSummary,
+} from '../finance/selectors';
+import { useCashFlow, useExpenses } from '../finance/api/queries';
+import { ExpenseBreakdownList } from './components/ExpenseBreakdownList';
+import { SummaryCard } from './components/SummaryCard';
+import { TransactionForm } from './components/TransactionForm';
 
-// Simulando um componente isolado para possibilitar importação lazy e fallbacks perfeitamente encaixados
-const SummaryCard = React.lazy(
-  () =>
-    new Promise<{ default: React.ComponentType<any> }>((resolve) =>
-      setTimeout(
-        () =>
-          resolve({
-            default: ({
-              title,
-              amount,
-              type,
-            }: {
-              title: string;
-              amount: number;
-              type: 'income' | 'expense' | 'balance';
-            }) => (
-              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
-                <Typography variant="label" color="muted">
-                  {title}
-                </Typography>
-                <Typography
-                  variant="h2"
-                  color={
-                    type === 'expense'
-                      ? 'error'
-                      : type === 'income'
-                      ? 'success'
-                      : 'primary'
-                  }
-                >
-                  <CurrencyFormat value={amount} />
-                </Typography>
-              </div>
-            ),
-          }),
-        1200 // Mock delay para demonstrar o Skeleton
-      )
-    )
-);
-
-const LazyCashFlowChart = React.lazy(
-  () =>
-    new Promise<{ default: React.ComponentType<any> }>((resolve) =>
-      setTimeout(
-        () =>
-          import('./components/CashFlowChart').then((module) =>
-            resolve({ default: module.CashFlowChart })
-          ),
-        1500
-      )
-    )
-);
+const LazyCashFlowChart = React.lazy(() => import('./components/CashFlowChart').then((module) => ({ default: module.CashFlowChart })));
 
 function SummaryCardSkeleton() {
   return (
@@ -67,35 +23,62 @@ function SummaryCardSkeleton() {
 }
 
 export function DashboardOverview() {
+  const { data: cashFlow, isPending: isCashFlowPending } = useCashFlow();
+  const { data: expenses, isPending: isExpensesPending } = useExpenses();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const summary = cashFlow ? getFinancialSummary(cashFlow) : { currentBalance: 0, totalIncome: 0, totalExpense: 0 };
+  const categoryBreakdown = expenses ? getExpenseCategoryPercentages(expenses) : [];
+
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <header>
-        <Typography variant="h1">Visão Geral</Typography>
-        <Typography variant="body" color="muted" className="mt-1">
-          Acompanhe suas finanças e metas deste mês.
-        </Typography>
+    <div className="space-y-8">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <Typography variant="h1">Visão Geral</Typography>
+          <Typography variant="body" color="muted" className="mt-1">
+            Acompanhe entradas, saídas e distribuição das despesas com contexto mensal.
+          </Typography>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsModalOpen(true)}
+          className="inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 sm:w-auto transition-colors"
+        >
+          <svg className="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+          </svg>
+          Nova Transação
+        </button>
       </header>
 
-      {/* Grid de Cards de Resumo */}
       <section aria-labelledby="summary-heading">
         <h2 id="summary-heading" className="sr-only">
           Resumo Financeiro
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
-          <Suspense fallback={<SummaryCardSkeleton />}>
-            <SummaryCard title="Saldo Atual" amount={12450.0} type="balance" />
-          </Suspense>
-          <Suspense fallback={<SummaryCardSkeleton />}>
-            <SummaryCard title="Receitas (Mês)" amount={15000.0} type="income" />
-          </Suspense>
-          <Suspense fallback={<SummaryCardSkeleton />}>
-            <SummaryCard title="Despesas (Mês)" amount={2550.0} type="expense" />
-          </Suspense>
+          {isCashFlowPending ? (
+            <>
+              <SummaryCardSkeleton />
+              <SummaryCardSkeleton />
+              <SummaryCardSkeleton />
+            </>
+          ) : (
+            <>
+              <Suspense fallback={<SummaryCardSkeleton />}>
+                <SummaryCard title="Saldo do semestre" amount={summary.currentBalance} tone="balance" />
+              </Suspense>
+              <Suspense fallback={<SummaryCardSkeleton />}>
+                <SummaryCard title="Receitas acumuladas" amount={summary.totalIncome} tone="income" />
+              </Suspense>
+              <Suspense fallback={<SummaryCardSkeleton />}>
+                <SummaryCard title="Despesas acumuladas" amount={summary.totalExpense} tone="expense" />
+              </Suspense>
+            </>
+          )}
         </div>
       </section>
 
-      {/* Alocação Padrão dos Gráficos */}
       <section
         aria-labelledby="charts-heading"
         className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6"
@@ -121,7 +104,7 @@ export function DashboardOverview() {
                 </div>
               }
             >
-              <LazyCashFlowChart data={mockCashFlowData} />
+              {!isCashFlowPending && cashFlow ? <LazyCashFlowChart data={cashFlow} /> : null}
             </Suspense>
           </div>
         </article>
@@ -130,11 +113,32 @@ export function DashboardOverview() {
           <Typography variant="h3" className="mb-6">
             Despesas por Categoria
           </Typography>
-          <div className="flex-1 flex items-center justify-center bg-slate-50/50 rounded-lg border border-slate-100 border-dashed relative">
-             <Skeleton width="w-48" height="h-48" rounded="full" className="opacity-50" />
+          <div className="flex-1 rounded-lg border border-slate-100 bg-slate-50/50 p-4">
+            {isExpensesPending ? (
+              <div className="space-y-4">
+                <Skeleton width="w-full" height="h-10" />
+                <Skeleton width="w-full" height="h-10" />
+                <Skeleton width="w-full" height="h-10" />
+              </div>
+            ) : (
+              <ExpenseBreakdownList categories={categoryBreakdown} />
+            )}
           </div>
         </article>
       </section>
+
+      {isModalOpen && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title="Nova Transação"
+        >
+          <TransactionForm 
+            onSuccess={() => setIsModalOpen(false)}
+            onCancel={() => setIsModalOpen(false)}
+          />
+        </Modal>
+      )}
     </div>
   );
 }

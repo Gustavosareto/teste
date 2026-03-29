@@ -19,22 +19,20 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
 
   const [name, setName] = useState(initialData?.name || '');
   const [type, setType] = useState<BillType>(initialData?.type || 'boleto');
-  const [amount, setAmount] = useState<number | undefined>(initialData?.amount);
-  const [dueDay, setDueDay] = useState(initialData?.dueDay?.toString() || '');
+  const [amount, setAmount] = useState<number | undefined>(initialData?.amount || 0);
+  const [dueDay, setDueDay] = useState<number>(initialData?.dueDay || 1);
   const [status, setStatus] = useState<BillStatus>(initialData?.status || 'pendente');
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
 
-    const parsedDueDay = parseInt(dueDay, 10);
-
-    if (!name || amount === undefined || isNaN(parsedDueDay)) {
-      setError('Por favor, preencha todos os campos obrigatórios corretamente.');
+    if (!name || amount === undefined || !dueDay) {
+      setError('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 
-    if (parsedDueDay < 1 || parsedDueDay > 31) {
+    if (dueDay < 1 || dueDay > 31) {
       setError('O dia de vencimento deve estar entre 1 e 31.');
       return;
     }
@@ -43,7 +41,7 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
       name,
       type,
       amount,
-      dueDay: parsedDueDay,
+      dueDay,
       status,
     };
 
@@ -52,7 +50,7 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
 
     if (isEditing && initialData) {
       updateBill(
-        { ...initialData, ...payload },
+        { id: initialData.id, updates: payload },
         { onSuccess: handleSuccess, onError: handleError }
       );
     } else {
@@ -61,7 +59,7 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 text-slate-900">
       {error && (
         <div className="bg-red-50 text-red-700 p-3 rounded-md text-sm" role="alert">
           {error}
@@ -70,7 +68,7 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
 
       <div className="space-y-1">
         <label htmlFor="name" className="block text-sm font-medium text-slate-700">
-          Nome / Descrição *
+          Descrição da Despesa *
         </label>
         <input
           type="text"
@@ -79,8 +77,8 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          placeholder="Ex: Conta de Luz, Netflix"
-          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 sm:text-sm"
+          placeholder="Ex: Aluguel, Netflix, Luz"
+          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 sm:text-sm bg-white"
           disabled={isPending}
         />
       </div>
@@ -88,7 +86,7 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1">
           <label htmlFor="type" className="block text-sm font-medium text-slate-700">
-            Categoria *
+            Tipo
           </label>
           <select
             id="type"
@@ -102,10 +100,9 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
             <option value="assinatura">Assinatura</option>
           </select>
         </div>
-        
         <div className="space-y-1">
           <label htmlFor="status" className="block text-sm font-medium text-slate-700">
-            Situação *
+            Status
           </label>
           <select
             id="status"
@@ -129,15 +126,16 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
           <CurrencyInput
             id="amount"
             name="amount"
+            required
             value={amount}
             onChange={setAmount}
-            required
             disabled={isPending}
+            className="bg-white"
           />
         </div>
         <div className="space-y-1">
           <label htmlFor="dueDay" className="block text-sm font-medium text-slate-700">
-            Dia do Vencimento *
+            Dia do Vencimento (1-31) *
           </label>
           <input
             type="number"
@@ -146,10 +144,9 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
             min="1"
             max="31"
             value={dueDay}
-            onChange={(e) => setDueDay(e.target.value)}
+            onChange={(e) => setDueDay(Number(e.target.value))}
             required
-            placeholder="Ex: 5"
-            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 sm:text-sm"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 sm:text-sm bg-white"
             disabled={isPending}
           />
         </div>
@@ -169,7 +166,7 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
           disabled={isPending}
           className="px-4 py-2 text-sm font-medium text-white bg-slate-900 border border-transparent rounded-md hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
         >
-          {isPending ? 'Salvando...' : isEditing ? 'Atualizar' : 'Adicionar'}
+          {isPending ? 'Salvando...' : isEditing ? 'Atualizar Despesa' : 'Salvar Despesa'}
         </button>
       </div>
     </form>
