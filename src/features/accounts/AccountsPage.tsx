@@ -63,10 +63,10 @@ export function AccountsPage() {
         <button
           type="button"
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-md dark:shadow-black/20 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 focus:ring-offset-2 sm:w-auto transition-colors"
+          className="inline-flex items-center justify-center rounded-2xl bg-slate-900 dark:bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white dark:text-slate-900 shadow-md transition-all hover:bg-slate-800 dark:hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-amber-500 focus:ring-offset-2 sm:w-auto active:scale-95 w-full sm:w-auto mt-2 sm:mt-0"
         >
-          <svg className="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+          <svg className="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Adicionar Conta
         </button>

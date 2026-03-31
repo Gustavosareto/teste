@@ -75,26 +75,28 @@ export function DashboardOverview() {
             ))}
           </div>
         </div>
-        <div className="flex gap-3">
+        <div className="flex w-full sm:w-auto gap-2 sm:gap-3">
           <button
             type="button"
             onClick={() => setIsImportModalOpen(true)}
-            className="inline-flex items-center justify-center rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-5 py-2.5 text-sm font-semibold text-slate-900 dark:text-slate-100 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all transform active:scale-95"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 sm:px-5 py-2.5 text-sm font-semibold text-slate-900 dark:text-slate-100 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all transform active:scale-95"
           >
-            <svg className="-ml-1 mr-2 h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="-ml-1 sm:mr-2 h-4 w-4 text-slate-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
             </svg>
-            Importar
+            <span className="hidden sm:inline">Importar</span>
+            <span className="sm:hidden">Importar</span>
           </button>
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow-md dark:shadow-black/20 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 focus:ring-offset-2 sm:w-auto transition-all transform active:scale-95"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-2xl bg-slate-900 dark:bg-amber-500 px-3 sm:px-5 py-2.5 text-sm font-semibold text-white dark:text-slate-900 shadow-md dark:shadow-black/20 hover:bg-slate-800 dark:hover:bg-amber-400 focus:outline-none transition-all transform active:scale-95"
           >
-            <svg className="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="-ml-1 sm:mr-2 h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            Registrar Movimentação
+            <span className="hidden sm:inline">Nova Entrada</span>
+            <span className="sm:hidden">Nova</span>
           </button>
         </div>
       </header>
