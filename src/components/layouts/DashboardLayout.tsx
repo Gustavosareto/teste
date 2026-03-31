@@ -1,9 +1,12 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import { useState } from 'react';
 import { Typography } from '../ui/Typography';
 import { usePrivacyMode } from '../../providers/PrivacyProvider';
 import { useTheme } from 'next-themes';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, LogOut, Trash2 } from 'lucide-react';
 import { AIChatbot } from '../ui/AIChatbot';
+import { ConfirmModal } from '../ui/ConfirmModal';
+import { useResetAllData } from '../../features/finance/api/queries';
 
 const navItems = [
   { to: '/dashboard', label: 'Visão geral' },
@@ -16,6 +19,23 @@ const navItems = [
 export function DashboardLayout() {
   const { isPrivacyMode, togglePrivacyMode } = usePrivacyMode();
   const { theme, setTheme } = useTheme();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const { mutate: resetData, isPending } = useResetAllData();
+
+  const handleReset = () => {
+    resetData(undefined, {
+      onSuccess: () => {
+        setIsResetModalOpen(false);
+        setIsMenuOpen(false);
+        alert('Todos os dados foram resetados com sucesso!');
+      },
+      onError: (error) => {
+        console.error('Erro ao resetar dados:', error);
+        alert('Falha ao resetar dados. Verifique a conexão.');
+      }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-200">
@@ -66,15 +86,46 @@ export function DashboardLayout() {
                   </svg>
                 )}
               </button>
-              <button
-                type="button"
-                className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
-                aria-label="Abrir configuracoes de conta"
-              >
-                Minha conta
-              </button>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
+                  aria-label="Abrir configuracoes de conta"
+                >
+                  Minha conta
+                </button>
+
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 shadow-xl ring-1 ring-black ring-opacity-5 z-50">
+                    <div className="px-2 py-1.5 mb-1">
+                      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Ações</p>
+                    </div>
+                    <button
+                      onClick={() => setIsResetModalOpen(true)}
+                      className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group"
+                      disabled={isPending}
+                    >
+                      <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                      {isPending ? 'Resetando...' : 'Zerar todos os dados'}
+                    </button>
+                    {/* Aqui você pode adicionar outros itens de menu no futuro */}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+
+          <ConfirmModal
+            isOpen={isResetModalOpen}
+            onClose={() => setIsResetModalOpen(false)}
+            onConfirm={handleReset}
+            title="Zerar todos os dados?"
+            message="Esta ação é irreversível. Todas as suas contas, transações, metas e boletos serão apagados permanentemente."
+            confirmText={isPending ? "Zerando..." : "Sim, zerar tudo"}
+            cancelText="Cancelar"
+            isDestructive={true}
+          />
 
           <nav aria-label="Navegacao principal">
             <ul className="flex flex-wrap gap-2">

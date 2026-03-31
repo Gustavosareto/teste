@@ -145,6 +145,16 @@ const getTransactions = async () => {
   return data as Transaction[];
 };
 
+const resetAllData = async () => {
+  // Deletar em ordem para evitar problemas de FK se houver
+  await supabase.from('transactions').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  await supabase.from('recurring_bills').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  await supabase.from('financial_goals').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  await supabase.from('assets').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  await supabase.from('bank_accounts').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  return true;
+};
+
 
 // --- Mutations ---
 
@@ -677,5 +687,15 @@ export function useDeleteAsset() {
   return useMutation({
     mutationFn: deleteAsset,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["assets"] })
+  });
+}
+
+export function useResetAllData() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: resetAllData,
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    }
   });
 }
