@@ -189,7 +189,7 @@ export function TransactionHistory({ isFullView = false }: { isFullView?: boolea
                     <>
                       <span className="text-slate-300 dark:text-slate-600 text-[10px]">•</span>
                       <span className="text-[10px] text-amber-600 dark:text-amber-500 font-bold bg-amber-50 dark:bg-amber-500/10 px-1.5 py-0.5 rounded">
-                        Parcela {installmentInfo.current} de {installmentInfo.total} ({installmentInfo.total - installmentInfo.current} restantes)
+                        {installmentInfo.current}/{installmentInfo.total}
                       </span>
                     </>
                   )}
