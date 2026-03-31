@@ -3,7 +3,7 @@ import React from 'react';
 type TypographyVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'body' | 'caption' | 'label';
 type ColorVariant = 'primary' | 'secondary' | 'muted' | 'error' | 'success';
 
-interface TypographyProps {
+interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
   variant?: TypographyVariant;
   color?: ColorVariant;
   as?: React.ElementType;
@@ -23,11 +23,11 @@ const variantStyles: Record<TypographyVariant, string> = {
 };
 
 const colorStyles: Record<ColorVariant, string> = {
-  primary: 'text-slate-900',
-  secondary: 'text-slate-700',
-  muted: 'text-slate-500',
-  error: 'text-red-600',
-  success: 'text-emerald-600',
+  primary: 'text-slate-900 dark:text-slate-50',
+  secondary: 'text-slate-700 dark:text-slate-300',
+  muted: 'text-slate-500 dark:text-slate-400',
+  error: 'text-red-600 dark:text-red-400',
+  success: 'text-emerald-600 dark:text-emerald-400',
 };
 
 const defaultElements: Record<TypographyVariant, React.ElementType> = {
@@ -47,9 +47,10 @@ export function Typography({
   className = '',
   id,
   children,
+  ...props
 }: TypographyProps) {
   const Component = as || defaultElements[variant];
   const combinedClasses = `${variantStyles[variant]} ${colorStyles[color]} ${className}`.trim();
 
-  return <Component id={id} className={combinedClasses}>{children}</Component>;
+  return <Component id={id} className={combinedClasses} {...props}>{children}</Component>;
 }

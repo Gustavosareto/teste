@@ -52,15 +52,15 @@ export function AccountForm({ initialData, onSuccess, onCancel }: AccountFormPro
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 text-slate-900">
+    <form onSubmit={handleSubmit} className="space-y-4 text-slate-900 dark:text-slate-100">
       {error && (
-        <div className="bg-red-50 text-red-700 p-3 rounded-md text-sm" role="alert">
+        <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 p-3 rounded-md text-sm" role="alert">
           {error}
         </div>
       )}
 
       <div className="space-y-1">
-        <label htmlFor="name" className="block text-sm font-medium text-slate-700">
+        <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
           Nome da Conta *
         </label>
         <input
@@ -71,13 +71,13 @@ export function AccountForm({ initialData, onSuccess, onCancel }: AccountFormPro
           onChange={(e) => setName(e.target.value)}
           required
           placeholder="Ex: Conta Principal"
-          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 sm:text-sm bg-white"
+          className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 focus:border-slate-900 sm:text-sm bg-white dark:bg-slate-900"
           disabled={isPending}
         />
       </div>
 
       <div className="space-y-1">
-        <label htmlFor="institution" className="block text-sm font-medium text-slate-700">
+        <label htmlFor="institution" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
           Instituição / Banco *
         </label>
         <input
@@ -88,14 +88,14 @@ export function AccountForm({ initialData, onSuccess, onCancel }: AccountFormPro
           onChange={(e) => setInstitution(e.target.value)}
           required
           placeholder="Ex: Banco Inter, Nubank"
-          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 sm:text-sm bg-white"
+          className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 focus:border-slate-900 sm:text-sm bg-white dark:bg-slate-900"
           disabled={isPending}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1">
-          <label htmlFor="type" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="type" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Tipo de Conta
           </label>
           <select
@@ -103,7 +103,7 @@ export function AccountForm({ initialData, onSuccess, onCancel }: AccountFormPro
             name="type"
             value={type}
             onChange={(e) => setType(e.target.value as AccountType)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 sm:text-sm bg-white"
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 focus:border-slate-900 sm:text-sm bg-white dark:bg-slate-900"
             disabled={isPending}
           >
             <option value="corrente">Corrente</option>
@@ -112,7 +112,7 @@ export function AccountForm({ initialData, onSuccess, onCancel }: AccountFormPro
           </select>
         </div>
         <div className="space-y-1">
-          <label htmlFor="currentBalance" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="currentBalance" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Saldo Inicial
           </label>
           <CurrencyInput
@@ -121,7 +121,7 @@ export function AccountForm({ initialData, onSuccess, onCancel }: AccountFormPro
             value={currentBalance}
             onChange={setCurrentBalance}
             disabled={isPending}
-            className="bg-white"
+            className="bg-white dark:bg-slate-900"
           />
         </div>
       </div>
@@ -130,7 +130,7 @@ export function AccountForm({ initialData, onSuccess, onCancel }: AccountFormPro
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:bg-slate-800/50 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
           disabled={isPending}
         >
           Cancelar
@@ -138,7 +138,7 @@ export function AccountForm({ initialData, onSuccess, onCancel }: AccountFormPro
         <button
           type="submit"
           disabled={isPending}
-          className="px-4 py-2 text-sm font-medium text-white bg-slate-900 border border-transparent rounded-md hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+          className="px-4 py-2 text-sm font-medium text-white bg-slate-900 border border-transparent rounded-md hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
         >
           {isPending ? 'Salvando...' : isEditing ? 'Atualizar Conta' : 'Salvar Conta'}
         </button>

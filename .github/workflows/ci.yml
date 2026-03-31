@@ -1,0 +1,33 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Verificando o código (Checkout)
+      uses: actions/checkout@v4
+
+    - name: Configurando Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Instalando Dependências
+      run: npm ci
+
+    - name: Checando Tipagem
+      run: npx tsc --noEmit
+
+    - name: Rodando Testes (Vitest)
+      run: npm test
+
+    - name: Build do Projeto (Vite)
+      run: npm run build

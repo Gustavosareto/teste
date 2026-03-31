@@ -5,6 +5,8 @@ import { AccountsPage } from '../features/accounts/AccountsPage';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as queries from '../features/finance/api/queries';
 
+import { PrivacyProvider } from '../providers/PrivacyProvider';
+
 // Mock das queries para controlar estado da Promise
 vi.mock('../features/finance/api/queries', async () => {
   const actual = await vi.importActual('../features/finance/api/queries');
@@ -20,9 +22,11 @@ function renderWithProviders(ui: React.ReactElement) {
   });
   return render(
     <QueryClientProvider client={testQueryClient}>
-      <MemoryRouter>
-        {ui}
-      </MemoryRouter>
+      <PrivacyProvider>
+        <MemoryRouter>
+          {ui}
+        </MemoryRouter>
+      </PrivacyProvider>
     </QueryClientProvider>
   );
 }

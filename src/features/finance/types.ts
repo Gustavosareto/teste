@@ -10,6 +10,7 @@ export interface ExpenseCategory {
   category: string;
   amount: number;
   color: string;
+  budgetLimit?: number; // Teto de gastos opcional
 }
 
 export interface BankAccount {
@@ -45,6 +46,7 @@ export interface RecurringBill {
 }
 
 export type TransactionType = 'income' | 'expense';
+export type TransactionCategory = 'Alimentação' | 'Compras' | 'Transporte' | 'Lazer' | 'Assinaturas' | 'Moradia' | 'Outros' | 'Salário' | 'Investimento';
 
 export interface Transaction {
   id: string;
@@ -52,5 +54,18 @@ export interface Transaction {
   description: string;
   amount: number;
   accountId: string;
+  category: TransactionCategory;
   date: string;
+}
+
+export interface Asset {
+  id: string;
+  symbol: string;
+  name: string;
+  type: string;
+  quantity: number;
+  averagePrice: number;
+  currentPrice: number;
+  color?: string;
+  updatedAt: string;
 }

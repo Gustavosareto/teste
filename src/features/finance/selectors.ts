@@ -5,7 +5,7 @@ import {
   RecurringBill,
 } from './types';
 
-export interface FinancialSummary {
+interface FinancialSummary {
   totalIncome: number;
   totalExpense: number;
   currentBalance: number;

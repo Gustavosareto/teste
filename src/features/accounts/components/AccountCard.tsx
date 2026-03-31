@@ -1,7 +1,10 @@
+import { useState, useRef, useEffect } from 'react';
 import { BankAccount } from '../../finance/types';
 import { CurrencyFormat } from '../../../components/ui/CurrencyFormat';
 import { Typography } from '../../../components/ui/Typography';
-import { useDeleteAccount } from '../../finance/api/queries';
+import { useDeleteAccount, useUpdateAccount } from '../../finance/api/queries';
+import { usePrivacyMode } from '../../../providers/PrivacyProvider';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 
 interface AccountCardProps {
   account: BankAccount;
@@ -28,14 +31,43 @@ const defaultColor = 'bg-slate-800 text-white';
 export function AccountCard({ account, onEdit }: AccountCardProps) {
   const colorClass = bankColors[account.institution] || defaultColor;
   const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount();
+  const { mutate: updateAccount } = useUpdateAccount();
+  const { isPrivacyMode } = usePrivacyMode();
+  
+  const [isEditingAmount, setIsEditingAmount] = useState(false);
+  const [editValue, setEditValue] = useState(account.currentBalance.toString());
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditingAmount && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditingAmount]);
+
+  const handleSaveAmount = () => {
+    const numValue = Number(editValue);
+    if (!isNaN(numValue) && numValue !== account.currentBalance) {
+      updateAccount({ id: account.id, updates: { currentBalance: numValue } });
+    }
+    setIsEditingAmount(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleSaveAmount();
+    if (e.key === 'Escape') {
+      setEditValue(account.currentBalance.toString());
+      setIsEditingAmount(false);
+    }
+  };
 
   return (
-    <article className={`bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative group ${isDeleting ? 'opacity-50' : ''}`}>
+    <article className={`bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md dark:shadow-black/20 hover:shadow-md transition-shadow relative group ${isDeleting ? 'opacity-50' : ''}`}>
       <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           type="button"
           onClick={() => onEdit(account)}
-          className="p-1.5 text-slate-400 hover:text-slate-900 bg-white rounded-md border border-slate-200 shadow-sm hover:bg-slate-50 relative z-10"
+          className="p-1.5 text-slate-400 hover:text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800 shadow-md dark:shadow-black/20 hover:bg-slate-50 dark:bg-slate-800/50 relative z-10"
           title="Editar conta"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,12 +76,8 @@ export function AccountCard({ account, onEdit }: AccountCardProps) {
         </button>
         <button
           type="button"
-          onClick={() => {
-            if (confirm('Tem certeza que deseja remover esta conta?')) {
-              deleteAccount(account.id);
-            }
-          }}
-          className="p-1.5 text-slate-400 hover:text-red-600 bg-white rounded-md border border-slate-200 shadow-sm hover:bg-red-50 relative z-10"
+          onClick={() => setIsConfirmOpen(true)}
+          className="p-1.5 text-slate-400 hover:text-red-600 bg-white dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800 shadow-md dark:shadow-black/20 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors relative z-10"
           title="Remover conta"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,7 +87,7 @@ export function AccountCard({ account, onEdit }: AccountCardProps) {
       </div>
 
       <div className="flex items-center gap-4 pr-16">
-        <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm border border-black/5 ${colorClass}`}>
+        <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-md dark:shadow-black/20 border border-black/5 ${colorClass}`}>
           {getInitials(account.institution)}
         </div>
         <div className="flex-1 min-w-0">
@@ -70,19 +98,45 @@ export function AccountCard({ account, onEdit }: AccountCardProps) {
         </div>
       </div>
       <div className="mt-3">
-        <span className="px-2.5 py-1 text-xs font-medium rounded-md bg-slate-100 text-slate-700 capitalize border border-slate-200">
+        <span className="px-2.5 py-1 text-xs font-medium rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 capitalize border border-slate-200 dark:border-slate-800">
           {account.type}
         </span>
       </div>
 
-      <div className="mt-6 pt-4 justify-between flex items-end border-t border-slate-50">
-        <div>
+      <div className="mt-6 pt-4 justify-between flex items-end border-t border-slate-50 dark:border-slate-800/50">
+        <div className="flex-1">
           <Typography variant="body" color="muted" className="text-xs uppercase tracking-wider font-semibold mb-1">
             Saldo Atual
           </Typography>
-          <Typography variant="h2" as="p" className="text-2xl">
-            <CurrencyFormat value={account.currentBalance} />
-          </Typography>
+          {isEditingAmount && !isPrivacyMode ? (
+            <div className="flex items-center gap-2">
+              <span className="text-slate-500 font-medium">R$</span>
+              <input
+                ref={inputRef}
+                type="number"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onBlur={handleSaveAmount}
+                onKeyDown={handleKeyDown}
+                className="w-32 bg-slate-50 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-lg font-bold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
+              />
+            </div>
+          ) : (
+            <Typography 
+              variant="h2" 
+              as="p" 
+              className={`text-2xl cursor-pointer hover:underline decoration-dashed underline-offset-4 decoration-slate-300 ${isPrivacyMode ? 'cursor-not-allowed' : ''}`}
+              onClick={() => {
+                if (!isPrivacyMode) {
+                  setEditValue(account.currentBalance.toString());
+                  setIsEditingAmount(true);
+                }
+              }}
+              title={isPrivacyMode ? "" : "Clique para editar rapidamente"}
+            >
+              <CurrencyFormat value={account.currentBalance} />
+            </Typography>
+          )}
         </div>
       </div>
       <div className="mt-2 flex justify-between items-center">
@@ -90,6 +144,19 @@ export function AccountCard({ account, onEdit }: AccountCardProps) {
             Atualizado em: {new Date(account.lastUpdate).toLocaleDateString('pt-BR')}
         </Typography>
       </div>
+
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        title="Remover Conta"
+        message="Tem certeza que deseja remover esta conta bancária? As movimentações atreladas a ela poderão ser afetadas."
+        confirmText="Remover"
+        isDestructive={true}
+        onConfirm={() => {
+          deleteAccount(account.id);
+          setIsConfirmOpen(false);
+        }}
+      />
     </article>
   );
 }

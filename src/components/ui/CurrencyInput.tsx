@@ -11,8 +11,8 @@ interface CurrencyInputProps extends Omit<NumericFormatProps, 'value' | 'onValue
 export function CurrencyInput({ value, onChange, id, name, error, className = '', ...props }: CurrencyInputProps) {
   const baseClasses = "w-full pl-9 pr-3 py-2 border rounded-md focus:outline-none focus:ring-2 sm:text-sm transition-colors";
   const stateClasses = error 
-    ? "border-red-300 focus:ring-red-500 focus:border-red-500 text-red-900 bg-red-50/50" 
-    : "border-slate-300 focus:ring-slate-900 focus:border-slate-900";
+    ? "border-red-300 focus:ring-red-500 focus:border-red-500 text-red-900 bg-red-50 dark:bg-red-900/30/50" 
+    : "border-slate-300 dark:border-slate-700 focus:ring-slate-900 focus:border-slate-900";
 
   return (
     <div className="relative">

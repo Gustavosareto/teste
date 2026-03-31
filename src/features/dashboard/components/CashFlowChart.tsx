@@ -21,11 +21,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div 
-        className="bg-white p-4 rounded-lg border border-slate-200 shadow-xl min-w-[200px]" 
+        className="bg-white dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800 shadow-xl min-w-[200px]" 
         role="tooltip" 
         aria-live="assertive"
       >
-        <p className="font-semibold text-slate-800 mb-3 border-b border-slate-100 pb-2">{label}</p>
+        <p className="font-semibold text-slate-800 dark:text-slate-200 dark:text-slate-100 mb-3 border-b border-slate-100 dark:border-slate-700 dark:border-slate-800 pb-2">{label}</p>
         <div className="flex flex-col gap-2">
           {payload.map((entry: any, index: number) => (
             <div key={`item-${index}`} className="flex items-center justify-between gap-4">
@@ -35,11 +35,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                   style={{ backgroundColor: entry.color }} 
                   aria-hidden="true" 
                 />
-                <span className="text-sm font-medium text-slate-600">
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
                   {entry.name === 'income' ? 'Receitas' : 'Despesas'}
                 </span>
               </div>
-              <span className="text-sm font-bold text-slate-900">
+              <span className="text-sm font-bold text-slate-900 dark:text-slate-100 dark:text-slate-50">
                 <CurrencyFormat value={entry.value || 0} />
               </span>
             </div>
@@ -93,7 +93,7 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
             axisLine={false} 
             tickLine={false} 
             tick={{ fill: '#64748b', fontSize: 12 }}
-            tickFormatter={(value) => `R$ ${value / 1000}k`}
+            tickFormatter={(value) => `R$ ${value >= 1000 ? (value / 1000).toFixed(1) + 'k' : value}`}
             dx={-10}
           />
           

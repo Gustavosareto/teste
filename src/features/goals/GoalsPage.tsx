@@ -6,11 +6,12 @@ import { Modal } from '../../components/ui/Modal';
 import { useGoals } from '../finance/api/queries';
 import { GoalCard } from './components/GoalCard';
 import { GoalForm } from './components/GoalForm';
+import { CompoundInterestSimulator } from './components/CompoundInterestSimulator';
 import { FinancialGoal } from '../finance/types';
 
 function GoalCardSkeleton() {
   return (
-    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-6">
+    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md dark:shadow-black/20 flex flex-col gap-6">
       <div className="flex justify-between">
         <div className="space-y-2">
           <Skeleton width="w-32" height="h-4" rounded="sm" />
@@ -67,7 +68,7 @@ export function GoalsPage() {
         <button
           type="button"
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 sm:w-auto transition-colors"
+          className="inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-md dark:shadow-black/20 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 focus:ring-offset-2 sm:w-auto transition-colors"
         >
           <svg className="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
@@ -77,7 +78,7 @@ export function GoalsPage() {
       </header>
 
       {isError && (
-        <div className="p-4 rounded-xl bg-red-50 text-red-700 border border-red-200" role="alert">
+        <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200" role="alert">
           Erro ao carregar metas: {error.message}
         </div>
       )}
@@ -101,33 +102,36 @@ export function GoalsPage() {
       </section>
 
       {!isPending && !isError && goals?.length === 0 && (
-        <div className="py-20 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/30 flex flex-col items-center justify-center gap-4">
+        <div className="py-20 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50 dark:bg-slate-800/50/30 flex flex-col items-center justify-center gap-4">
           <Typography variant="body" color="muted">
             Você ainda não possui nenhuma meta financeira cadastrada.
           </Typography>
           <button
             type="button"
             onClick={() => handleOpenModal()}
-            className="text-sm font-medium text-slate-900 underline hover:text-slate-700"
+            className="text-sm font-medium text-slate-900 dark:text-slate-100 underline hover:text-slate-700 dark:text-slate-300"
           >
             Criar primeira meta
           </button>
         </div>
       )}
 
-      {isModalOpen && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          title={goalToEdit ? "Editar Meta Financeira" : "Nova Meta Financeira"}
-        >
-          <GoalForm 
-            initialData={goalToEdit}
-            onSuccess={handleCloseModal} 
-            onCancel={handleCloseModal} 
-          />
-        </Modal>
-      )}
+      {/* Simulador de Juros e Gamificação */}
+      <section className="pt-6">
+        <CompoundInterestSimulator />
+      </section>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title={goalToEdit ? "Editar Meta Financeira" : "Nova Meta Financeira"}
+      >
+        <GoalForm 
+          initialData={goalToEdit}
+          onSuccess={handleCloseModal} 
+          onCancel={handleCloseModal} 
+        />
+      </Modal>
     </div>
   );
 }

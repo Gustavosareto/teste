@@ -59,15 +59,15 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 text-slate-900">
+    <form onSubmit={handleSubmit} className="space-y-4 text-slate-900 dark:text-slate-100">
       {error && (
-        <div className="bg-red-50 text-red-700 p-3 rounded-md text-sm" role="alert">
+        <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 p-3 rounded-md text-sm" role="alert">
           {error}
         </div>
       )}
 
       <div className="space-y-1">
-        <label htmlFor="name" className="block text-sm font-medium text-slate-700">
+        <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
           Descrição da Despesa *
         </label>
         <input
@@ -78,14 +78,14 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
           onChange={(e) => setName(e.target.value)}
           required
           placeholder="Ex: Aluguel, Netflix, Luz"
-          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 sm:text-sm bg-white"
+          className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 focus:border-slate-900 sm:text-sm bg-white dark:bg-slate-900"
           disabled={isPending}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1">
-          <label htmlFor="type" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="type" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Tipo
           </label>
           <select
@@ -93,7 +93,7 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
             name="type"
             value={type}
             onChange={(e) => setType(e.target.value as BillType)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 sm:text-sm bg-white"
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 focus:border-slate-900 sm:text-sm bg-white dark:bg-slate-900"
             disabled={isPending}
           >
             <option value="boleto">Boleto</option>
@@ -101,7 +101,7 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
           </select>
         </div>
         <div className="space-y-1">
-          <label htmlFor="status" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="status" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Status
           </label>
           <select
@@ -109,7 +109,7 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
             name="status"
             value={status}
             onChange={(e) => setStatus(e.target.value as BillStatus)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 sm:text-sm bg-white"
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 focus:border-slate-900 sm:text-sm bg-white dark:bg-slate-900"
             disabled={isPending}
           >
             <option value="pendente">Pendente</option>
@@ -120,7 +120,7 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1">
-          <label htmlFor="amount" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="amount" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Valor *
           </label>
           <CurrencyInput
@@ -130,11 +130,11 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
             value={amount}
             onChange={setAmount}
             disabled={isPending}
-            className="bg-white"
+            className="bg-white dark:bg-slate-900"
           />
         </div>
         <div className="space-y-1">
-          <label htmlFor="dueDay" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="dueDay" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Dia do Vencimento (1-31) *
           </label>
           <input
@@ -146,7 +146,7 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
             value={dueDay}
             onChange={(e) => setDueDay(Number(e.target.value))}
             required
-            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 sm:text-sm bg-white"
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 focus:border-slate-900 sm:text-sm bg-white dark:bg-slate-900"
             disabled={isPending}
           />
         </div>
@@ -156,7 +156,7 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:bg-slate-800/50 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
           disabled={isPending}
         >
           Cancelar
@@ -164,7 +164,7 @@ export function BillForm({ initialData, onSuccess, onCancel }: BillFormProps) {
         <button
           type="submit"
           disabled={isPending}
-          className="px-4 py-2 text-sm font-medium text-white bg-slate-900 border border-transparent rounded-md hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+          className="px-4 py-2 text-sm font-medium text-white bg-slate-900 border border-transparent rounded-md hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
         >
           {isPending ? 'Salvando...' : isEditing ? 'Atualizar Despesa' : 'Salvar Despesa'}
         </button>

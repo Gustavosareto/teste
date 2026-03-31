@@ -26,15 +26,15 @@ export function BillsCalendar({ bills, selectedDay, onSelectDay }: BillsCalendar
   }, {} as Record<number, RecurringBill[]>);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 md:p-6">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md dark:shadow-black/20 p-5 md:p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="font-semibold text-slate-800 text-lg">
+        <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-lg">
           {currentDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' }).replace(/^\w/, (c) => c.toUpperCase())}
         </h3>
         {selectedDay && (
           <button 
             onClick={() => onSelectDay(null)}
-            className="text-xs font-medium text-slate-500 hover:text-slate-800"
+            className="text-xs font-medium text-slate-500 hover:text-slate-800 dark:text-slate-200"
           >
             Limpar filtro
           </button>
@@ -64,9 +64,9 @@ export function BillsCalendar({ bills, selectedDay, onSelectDay }: BillsCalendar
               key={day}
               onClick={() => onSelectDay(day)}
               className={`
-                relative h-12 w-full rounded-lg flex flex-col items-center justify-center text-sm transition-all focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1
-                ${isSelected ? 'bg-slate-900 text-white shadow-md' : 'text-slate-700 hover:bg-slate-50'}
-                ${isToday && !isSelected ? 'font-bold ring-1 ring-inset ring-slate-200 bg-slate-50' : ''}
+                relative h-12 w-full rounded-lg flex flex-col items-center justify-center text-sm transition-all focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 focus:ring-offset-1
+                ${isSelected ? 'bg-slate-900 text-white shadow-md' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-800/50'}
+                ${isToday && !isSelected ? 'font-bold ring-1 ring-inset ring-slate-200 bg-slate-50 dark:bg-slate-800/50' : ''}
               `}
               aria-label={`Dia ${day}${hasBills ? ', possui boletos' : ''}`}
               aria-pressed={isSelected}
@@ -74,7 +74,7 @@ export function BillsCalendar({ bills, selectedDay, onSelectDay }: BillsCalendar
               <span className={`z-10 ${isSelected ? 'text-white' : ''}`}>{day}</span>
               {hasBills && (
                 <span 
-                  className={`mt-1 h-1.5 w-1.5 rounded-full ${isSelected ? 'bg-white' : hasPending ? 'bg-amber-500' : 'bg-emerald-500'}`} 
+                  className={`mt-1 h-1.5 w-1.5 rounded-full ${isSelected ? 'bg-white dark:bg-slate-900' : hasPending ? 'bg-amber-500' : 'bg-emerald-500'}`} 
                   aria-hidden="true" 
                 />
               )}
