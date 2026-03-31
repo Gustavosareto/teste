@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Typography } from '../ui/Typography';
 import { usePrivacyMode } from '../../providers/PrivacyProvider';
 import { useTheme } from 'next-themes';
-import { Sun, Moon, LogOut, Trash2 } from 'lucide-react';
+import { Sun, Moon, Trash2 } from 'lucide-react';
 import { AIChatbot } from '../ui/AIChatbot';
 import { ConfirmModal } from '../ui/ConfirmModal';
 import { useResetAllData } from '../../features/finance/api/queries';
